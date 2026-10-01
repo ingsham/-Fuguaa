@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  BUYER
+  SELLER
+  ADMIN
+}
+enum VerificationStatus {
+  UNSUBMITTED
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum ListingStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+}
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  DISPUTED
+}
+enum EscrowStatus {
+  UNPAID
+  HELD
+  RELEASED
+  REFUNDED
+}
+enum DisputeStatus {
+  OPEN
+  RESOLVED
+  REJECTED
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String?
+  passwordHash String?
+  role         Role           @default(BUYER)
+  createdAt    DateTime       @default(now())
+  seller       SellerProfile?
+  orders       Order[]
+  reviews      Review[]
+  favorites    Favorite[]
+}
+
+model SellerProfile {
+  userId             String             @id
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopName           String
+  bio                String?
+  region             String
+  ghanaCardEncrypted String? // AES-256-GCM, see src/lib/crypto.ts
+  verificationStatus VerificationStatus @default(UNSUBMITTED)
+  verificationDocUrl String?
+  verifiedAt         DateTime?
+  products           Product[]
+  orders             Order[]
+  reviews            Review[]
+}
+
+model Product {
+  id           String        @id @default(cuid())
+  sellerId     String
+  seller       SellerProfile @relation(fields: [sellerId], references: [userId], onDelete: Cascade)
+  title        String
+  description  String
+  priceGhs     Int // pesewas (GHS x 100) to avoid float errors
+  stock        Int           @default(0)
+  photos       String[]
+  sizes        String[]
+  colors       String[]
+  fabricType   String?
+  occasionTags String[]
+  sizeGuide    String?
+  status       ListingStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+  items        OrderItem[]
+  favorites    Favorite[]
+}
+
+model Order {
+  id           String        @id @default(cuid())
+  buyerId      String
+  buyer        User          @relation(fields: [buyerId], references: [id])
+  sellerId     String
+  seller       SellerProfile @relation(fields: [sellerId], references: [userId])
+  status       OrderStatus   @default(PENDING)
+  escrowStatus EscrowStatus  @default(UNPAID)
+  totalGhs     Int
+  paystackRef  String?       @unique
+  deliveredAt  DateTime? // starts the 48-72h dispute window
+  createdAt    DateTime      @default(now())
+  items        OrderItem[]
+  review       Review?
+  dispute      Dispute?
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  priceGhs  Int
+  size      String?
+  color     String?
+}
+
+model Review {
+  id        String        @id @default(cuid())
+  orderId   String        @unique
+  order     Order         @relation(fields: [orderId], references: [id])
+  buyerId   String
+  buyer     User          @relation(fields: [buyerId], references: [id])
+  sellerId  String
+  seller    SellerProfile @relation(fields: [sellerId], references: [userId])
+  rating    Int
+  comment   String?
+  photos    String[]
+  createdAt DateTime      @default(now())
+}
+
+model Dispute {
+  id        String        @id @default(cuid())
+  orderId   String        @unique
+  order     Order         @relation(fields: [orderId], references: [id])
+  reason    String
+  status    DisputeStatus @default(OPEN)
+  createdAt DateTime      @default(now())
+}
+
+model Favorite {
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([userId, productId])
+}

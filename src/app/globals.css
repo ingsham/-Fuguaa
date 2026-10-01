@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { @apply bg-cream/40 text-charcoal font-sans antialiased; }
+
+/* Woven-stripe motif from the logo, reused for dividers, borders and loaders */
+.weave {
+  height: 6px;
+  background: linear-gradient(90deg,
+    #C1572A 0 12%, #2B3A55 12% 18%, #D9A441 18% 42%, #3F6B4A 42% 46%,
+    #F3E5D0 46% 54%, #3F6B4A 54% 58%, #D9A441 58% 82%, #2B3A55 82% 88%, #C1572A 88% 100%);
+}
+.weave-loading { background-size: 200% 100%; animation: weave 1.6s linear infinite; }
+@keyframes weave { to { background-position: -200% 0; } }
