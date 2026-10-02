@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 
-// Buyer signup only. Sellers sign up through a separate flow (see
-// /signup/seller, linked from the footer) that leads straight into
-// Ghana Card verification — keeping the two paths visually distinct
-// avoids buyers accidentally creating seller accounts, and vice versa.
 export default function SignupPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "buyer" as "buyer" | "seller",
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +25,7 @@ export default function SignupPage() {
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, role: "buyer" }),
+        body: JSON.stringify(form),
       });
       const data = await res.json();
 
@@ -46,8 +47,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.push("/shop");
-      router.refresh();
+      router.push(form.role === "seller" ? "/seller-onboarding" : "/shop");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -58,11 +58,26 @@ export default function SignupPage() {
   return (
     <div className="mx-auto max-w-sm w-full px-4 py-16">
       <h1 className="text-2xl font-semibold mb-1">Create your account</h1>
-      <p className="text-muted text-sm mb-8">
-        Join Fuguaa to browse and buy from real smock weavers.
-      </p>
+      <p className="text-muted text-sm mb-8">Join Fuguaa as a buyer or seller.</p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="flex gap-2">
+          {(["buyer", "seller"] as const).map((r) => (
+            <button
+              type="button"
+              key={r}
+              onClick={() => setForm((f) => ({ ...f, role: r }))}
+              className={`flex-1 py-2 rounded-full text-sm font-medium border ${
+                form.role === r
+                  ? "bg-indigo text-cream border-indigo"
+                  : "border-charcoal/20"
+              }`}
+            >
+              {r === "buyer" ? "I want to buy" : "I want to sell"}
+            </button>
+          ))}
+        </div>
+
         <input
           required
           placeholder="Full name"
@@ -103,12 +118,6 @@ export default function SignupPage() {
         Already have an account?{" "}
         <Link href="/login" className="text-terracotta font-medium">
           Sign in
-        </Link>
-      </p>
-      <p className="text-sm text-muted mt-2">
-        Want to sell on Fuguaa?{" "}
-        <Link href="/signup/seller" className="text-terracotta font-medium">
-          Become a seller
         </Link>
       </p>
     </div>

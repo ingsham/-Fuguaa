@@ -4,14 +4,7 @@ import { useEffect, useState, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ProductCard, ProductCardData } from "@/components/ProductCard";
 
-const OCCASIONS = ["wedding", "funeral", "festival", "everyday", "children"];
-const MATERIALS = [
-  "Handwoven cotton",
-  "Premium handwoven cotton",
-  "Cotton-silk blend",
-  "Kente-trim cotton",
-  "Lightweight cotton",
-];
+const OCCASIONS = ["wedding", "funeral", "festival", "everyday"];
 
 function ShopContent() {
   const searchParams = useSearchParams();
@@ -21,7 +14,6 @@ function ShopContent() {
   const [q, setQ] = useState(searchParams.get("q") ?? "");
 
   const occasion = searchParams.get("occasion") ?? "";
-  const material = searchParams.get("material") ?? "";
   const minPrice = searchParams.get("minPrice") ?? "";
   const maxPrice = searchParams.get("maxPrice") ?? "";
 
@@ -30,7 +22,6 @@ function ShopContent() {
     const params = new URLSearchParams();
     if (searchParams.get("q")) params.set("q", searchParams.get("q")!);
     if (occasion) params.set("occasion", occasion);
-    if (material) params.set("material", material);
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
 
@@ -41,7 +32,7 @@ function ShopContent() {
     } finally {
       setLoading(false);
     }
-  }, [searchParams, occasion, material, minPrice, maxPrice]);
+  }, [searchParams, occasion, minPrice, maxPrice]);
 
   useEffect(() => {
     // Fetching data from our own API in response to filter/search changes
@@ -83,18 +74,6 @@ function ShopContent() {
           {OCCASIONS.map((o) => (
             <option key={o} value={o}>
               {o[0].toUpperCase() + o.slice(1)}
-            </option>
-          ))}
-        </select>
-        <select
-          value={material}
-          onChange={(e) => updateParam("material", e.target.value)}
-          className="rounded-full border border-charcoal/20 px-4 py-2 text-sm bg-white"
-        >
-          <option value="">All materials</option>
-          {MATERIALS.map((m) => (
-            <option key={m} value={m}>
-              {m}
             </option>
           ))}
         </select>

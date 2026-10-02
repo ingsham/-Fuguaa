@@ -6,14 +6,6 @@ const occasions = [
   { label: "Funeral", query: "funeral" },
   { label: "Festival", query: "festival" },
   { label: "Everyday", query: "everyday" },
-  { label: "Children", query: "children" },
-];
-
-const materials = [
-  { label: "Handwoven cotton", query: "Handwoven cotton" },
-  { label: "Premium cotton", query: "Premium handwoven cotton" },
-  { label: "Cotton-silk blend", query: "Cotton-silk blend" },
-  { label: "Kente-trim cotton", query: "Kente-trim cotton" },
 ];
 
 export default function Home() {
@@ -44,7 +36,7 @@ export default function Home() {
             Browse smocks
           </Link>
           <Link
-            href="/signup/seller"
+            href="/seller-onboarding"
             className="border border-charcoal/20 text-charcoal font-medium px-7 py-3 rounded-full hover:bg-cream transition-colors"
           >
             Sell on Fuguaa
@@ -57,7 +49,7 @@ export default function Home() {
       {/* Occasion browsing */}
       <section className="mx-auto max-w-6xl w-full px-4 sm:px-6 py-14">
         <h2 className="text-2xl font-semibold mb-6">Shop by occasion</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {occasions.map((o) => (
             <Link
               key={o.query}
@@ -65,22 +57,6 @@ export default function Home() {
               className="rounded-2xl border border-charcoal/10 bg-cream/60 px-6 py-8 text-center font-medium hover:border-terracotta hover:bg-cream transition-colors"
             >
               {o.label}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Material browsing */}
-      <section className="mx-auto max-w-6xl w-full px-4 sm:px-6 pb-14">
-        <h2 className="text-2xl font-semibold mb-6">Shop by material</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {materials.map((m) => (
-            <Link
-              key={m.query}
-              href={`/shop?material=${encodeURIComponent(m.query)}`}
-              className="rounded-2xl border border-charcoal/10 bg-white px-6 py-8 text-center font-medium hover:border-terracotta hover:bg-cream/40 transition-colors"
-            >
-              {m.label}
             </Link>
           ))}
         </div>

@@ -8,7 +8,6 @@ export async function GET(req: NextRequest) {
   const q = searchParams.get("q");
   const region = searchParams.get("region");
   const occasion = searchParams.get("occasion");
-  const material = searchParams.get("material");
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
 
@@ -18,7 +17,6 @@ export async function GET(req: NextRequest) {
   if (minPrice) conditions.push(gte(products.priceGhs, minPrice));
   if (maxPrice) conditions.push(lte(products.priceGhs, maxPrice));
   if (region) conditions.push(eq(sellerProfiles.region, region));
-  if (material) conditions.push(ilike(products.fabricType, `%${material}%`));
 
   const rows = await db
     .select({
@@ -27,7 +25,6 @@ export async function GET(req: NextRequest) {
       priceGhs: products.priceGhs,
       photos: products.photos,
       occasionTags: products.occasionTags,
-      fabricType: products.fabricType,
       sellerId: products.sellerId,
       shopName: sellerProfiles.shopName,
       verificationStatus: sellerProfiles.verificationStatus,
