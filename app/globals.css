@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdfaf6;
+  --foreground: #2b2118;
+
+  /* Fuguaa brand palette */
+  --terracotta: #c1572a;
+  --ochre: #d9a441;
+  --indigo: #2b3a55;
+  --forest: #3f6b4a;
+  --cream: #f3e5d0;
+  --charcoal: #2b2118;
+  --muted: #6b5d4f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-terracotta: var(--terracotta);
+  --color-ochre: var(--ochre);
+  --color-indigo: var(--indigo);
+  --color-forest: var(--forest);
+  --color-cream: var(--cream);
+  --color-charcoal: var(--charcoal);
+  --color-muted: var(--muted);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-voice: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman",
+    serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1c1712;
+    --foreground: #f3e5d0;
+    --muted: #c9bba8;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Thin woven-stripe accent, echoing the logo mark. Used sparingly as a
+   section divider rather than a decoration everywhere. */
+.weave-divider {
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--terracotta) 0 24px,
+    var(--ochre) 24px 48px,
+    var(--indigo) 48px 56px,
+    var(--forest) 56px 64px,
+    var(--cream) 64px 96px
+  );
+}
