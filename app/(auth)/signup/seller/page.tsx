@@ -5,11 +5,10 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 
-// Buyer signup only. Sellers sign up through a separate flow (see
-// /signup/seller, linked from the footer) that leads straight into
-// Ghana Card verification — keeping the two paths visually distinct
-// avoids buyers accidentally creating seller accounts, and vice versa.
-export default function SignupPage() {
+// Dedicated seller signup — separate from the buyer signup page so
+// sellers always land in the Ghana Card verification flow next, and
+// buyers never see a "sell" option by accident.
+export default function SellerSignupPage() {
   const router = useRouter();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -24,7 +23,7 @@ export default function SignupPage() {
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, role: "buyer" }),
+        body: JSON.stringify({ ...form, role: "seller" }),
       });
       const data = await res.json();
 
@@ -46,7 +45,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.push("/shop");
+      router.push("/seller-onboarding");
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
@@ -57,9 +56,10 @@ export default function SignupPage() {
 
   return (
     <div className="mx-auto max-w-sm w-full px-4 py-16">
-      <h1 className="text-2xl font-semibold mb-1">Create your account</h1>
+      <h1 className="text-2xl font-semibold mb-1">Sell on Fuguaa</h1>
       <p className="text-muted text-sm mb-8">
-        Join Fuguaa to browse and buy from real smock weavers.
+        Create a seller account, then verify your identity with your Ghana
+        Card to start listing.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -93,22 +93,22 @@ export default function SignupPage() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-terracotta text-white font-medium py-2.5 rounded-full hover:bg-charcoal transition-colors disabled:opacity-50"
+          className="bg-indigo text-cream font-medium py-2.5 rounded-full hover:bg-charcoal transition-colors disabled:opacity-50"
         >
-          {loading ? "Creating account..." : "Create account"}
+          {loading ? "Creating account..." : "Create seller account"}
         </button>
       </form>
 
       <p className="text-sm text-muted mt-6">
-        Already have an account?{" "}
+        Already have a seller account?{" "}
         <Link href="/login" className="text-terracotta font-medium">
           Sign in
         </Link>
       </p>
       <p className="text-sm text-muted mt-2">
-        Want to sell on Fuguaa?{" "}
-        <Link href="/signup/seller" className="text-terracotta font-medium">
-          Become a seller
+        Just here to shop?{" "}
+        <Link href="/signup" className="text-terracotta font-medium">
+          Create a buyer account
         </Link>
       </p>
     </div>
